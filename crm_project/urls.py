@@ -16,13 +16,13 @@ Including another URLconf
 from django.conf.urls import url,include
 from django.contrib import admin
 from django.urls import path
-import notifications.urls
+
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('web.urls')),
     path('rbac/', include('rbac.urls', namespace='rbac')),
-    path('inbox/notifications/', include(notifications.urls, namespace='notifications')),
+
 
 ]
