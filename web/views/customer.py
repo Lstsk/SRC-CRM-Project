@@ -5,7 +5,6 @@ from django.http import FileResponse
 from django.conf import settings
 import xlrd
 from django.contrib.auth.decorators import login_required
-from notifications.signals import notify
 from web import models
 from web.forms_web.customer import CustomerForm
 from rbac.models import UserInfo
