@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'rbac.apps.RbacConfig',
     'web',
     'rbac.templatetags',
-    'notifications',
 
 
 ]
