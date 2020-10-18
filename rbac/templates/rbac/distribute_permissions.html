@@ -1,0 +1,235 @@
+{% extends 'layout.html' %}
+{% load rbac %}
+
+{% block css %}
+    <style>
+        tr.active{
+            border-left: 3px solid darkkhaki;
+        }
+
+    .permission-area tr.root{
+        background-color: #f1f7fd;
+    }
+
+    .permission-area .child .check-all input[type='checkbox']{
+        margin: 0 5px;
+        padding: 5px;
+    }
+
+    .permission-area .child .parent{
+        padding: 5px 0;
+    }
+
+    .permission-area .child label{
+        font-weight: normal;
+        margin-bottom: 0;
+        font-size: 12px;
+    }
+
+    .permission-area .child .children{
+        padding: 0 0 0 20px;
+    }
+
+    .permission-area .child .children .third_menu{
+        display: inline-block;
+        margin: 2px 5px;
+    }
+    table{
+        font-size: 12px;
+    }
+
+    .panel-body{
+        font-size: 12px;
+    }
+
+    .select-help{
+        float: right;
+    }
+
+    .select-help label{
+        font-weight: normal;
+        cursor: pointer;
+    }
+    .select-help .check-all{
+        float: left;
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .active{
+        color:red
+    }
+
+    .role-area tr td a{
+        display: block;
+    }
+
+    .role-area tr .active1{
+        background-color: #f1f7fd;
+        border-left: 3px solid #fdc00f;
+    }
+    .role-area tr .active_check{
+        background-color: #f1f7fd;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="box-container">
+        <div class="col-md-3 user-area">
+        <div class="panel panel-default">
+      <!-- Default panel contents -->
+          <div class="panel-heading">
+              <i class="fa fa-book " aria-hidden="true" style="font-size: 15px"></i> User Info
+          </div>
+        <div class="panel-body">
+            Click on the user
+        </div>
+          <!-- Table -->
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for user in user_list %}
+              <tr>
+{#              need to fix this#}
+                <td class="{% if user.id|safe == uid %}active{% endif %}"><a href="?uid={{ user.id }}" class="{% if user.id|safe == uid %}active{% endif %}">{{ user.name }}</a></td>
+                <td class="table_data"><a href="?uid={{ user.id }}">{{ user.email }}</a></td>
+              </tr>
+            {% endfor %}
+
+            </tbody>
+          </table>
+            </div>
+        </div>
+        <div class="col-md-3 role-area">
+         <form action="" method="post">
+         {% csrf_token%}
+         <input type="hidden" name="type" value="role">
+        <div class=" panel panel-default">
+      <!-- Default panel contents -->
+          <div class="panel-heading">
+              <i class="fa fa-folder " aria-hidden="true" style="font-size: 15px"></i>&nbsp;Roles
+              {% if uid %}
+              <button class="right btn btn-success btn-xs"
+              style="padding: 2px 8px; margin: -3px;" >
+                  <i class="fa fa-save" aria-hidden="true"></i>
+                  Save
+              </button>
+              {% endif %}
+          </div>
+        <div class="panel-body" style="color: grey;padding: 10px 5px">
+            Click The User To See Their Roles
+        </div>
+          <!-- Table -->
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Choices</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for role in role_list %}
+                <tr class="{% if role.id|safe == rid %}active{% endif %}">
+                    <td>
+                        {% if uid %}
+                        <a href="?uid={{ uid }}&rid={{ role.id }}">{{ role.title }}</a>
+                        {% else %}
+                        <a href="?rid={{ role.id }}">{{ role.title }}</a>
+                        {% endif %}
+                    </td>
+                    <td><input type="checkbox" name="roles" value="{{ role.id }}" {% if role.id in user_roles%}checked{% endif %}></td>
+                </tr>
+             {% endfor %}
+
+            </tbody>
+          </table>
+            </div>
+          </form>
+        </div>
+        <div class="col-md-6 permission-area">
+        <form  method="post">
+           {% csrf_token %}
+            <input type="hidden" name="type" value="permission">
+        <div class=" panel panel-default">
+      <!-- Default panel contents -->
+          <div class="panel-heading">
+              <i class="fa fa-gavel " aria-hidden="true" style="font-size: 15px"></i>&nbsp;Permissions
+
+              {% if rid %}
+                  <button class="right btn btn-success btn-xs"
+                  style="padding: 2px 8px; margin: -3px;" >
+                      <i class="fa fa-save" aria-hidden="true"></i>
+                      Save
+                    </button>
+           {% endif %}
+          </div>
+        <div class="panel-body" style="color: grey;padding: 10px 5px">
+            Click on a role to change its permissions
+            ,   Clicking the user but not the role gives you all the role the user has
+        </div>
+            <table class="table" >
+                <tbody>
+                {% for item in all_menu_list %}
+                    <tr class="root">
+                    <td>
+                        <i class="fa fa-caret-down" aria-hidden="True"></i>
+                        {{ item.title }}
+                        <div class="select-help">
+                            <div class="check-all">
+                                <label for="check_all_{{ item.id }}">Select All</label>
+                                <input type="checkbox" id="check_all_{{ item.id }}">
+                            </div>
+                        </div>
+                    </td>
+                    </tr>
+
+                    <tr class="child">
+                        {% if item.children %}
+                        <td>
+                            {% for child in item.children %}
+                                <div class="parent">
+                                    <input type="checkbox" id="permission_{{ child.id }}" name="permissions" value="{{ child.id }}"  {% if child.id in user_permissions%}checked{% endif %}>
+
+                                    <label for="permission_{{ child.id }}">{{ child.title }} (Menu)</label>
+
+                                </div>
+                                <div class="children">
+                                    {% for third_menu in child.children %}
+                                        <div class="third_menu">
+                                                <input type="checkbox" id="permission_{{ third_menu.id }}" name="permissions" value="{{ third_menu.id }}" {% if third_menu.id in user_permissions%}checked{% endif %}>
+                                            <label for="permission_{{ third_menu.id }}">{{ third_menu.title }}</label>
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            {% endfor %}
+
+                        </td>
+
+                        {% endif %}
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+            </form>
+        </div>
+        </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            $('.check-all input:checkbox').change(function () {
+                $(this).parents('.root').next().find(':checkbox').prop('checked', $(this).prop('checked'));
+            })
+        })
+    </script>%
+{% endblock %}

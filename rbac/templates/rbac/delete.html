@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="box-container">
+        <div class="alert alert-danger" role="alert">
+            <form action="" method="post">
+                {% csrf_token %}
+                <h4><i class="fa fa-warning" aria-hidden="true"></i>&nbsp;Are you sure?</h4>
+                <h5>You won't be able to revert this</h5>
+                
+                <div style="margin-top: 20px">
+                    <a href="{{ cancel }}" class="btn btn-default btn-sm">Cancel</a>
+                    <input type="submit" class="btn btn-danger btn-sm" value="Confirm">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <style>
+        .box-container{
+            margin-top: 20px;
+            padding: 50px;
+        }
+    </style>
+{% endblock %}

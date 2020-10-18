@@ -1,0 +1,17 @@
+<div class="multi-menu">
+    {% for menu in menus.values %}
+        <div class="item">
+            <div class="title">
+        <span class="icon-wrap">
+            <i class="fa {{ menu.icon }}"></i>
+        </span>
+                {{ menu.title }}
+            </div>
+            <div class="body {{ menu.class }}">
+                {% for second_menu in menu.second_menu%}
+                    <a href="{{ second_menu.url }}" class="{{ second_menu.class }}">{{ second_menu.title }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</div>
